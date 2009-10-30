@@ -1,0 +1,17 @@
+How to get all this stuff to work
+
+Firstly, you need to change mountpoint and cddev variables in the addcd script.
+Read note at the beginning of the script to figure out what do you need to
+assign to this variables.
+
+Then, if you want, change db variable (you need to do it in _all_ scripts) -
+database location stored there.
+
+Finally, move scripts to any directory mentioned in your $PATH environment
+variable. Alternatively, you can create new directory (say, scripts) in your
+home directory (or somewhere else) and add it to the $PATH.
+
+Don't forget to check out repository sometimes!
+
+With my best regards,
+Minoru
