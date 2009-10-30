@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# findcd - searches for files in the database
+#
+# USAGE: findcd request
+# request is a single word or regular expression
+
+# database location
+db="$HOME/.trashman.db"
+
+request="$1"
+if [ -z "$request" ]
+then
+    echo "USAGE: findcd request"
+    echo "request can be a single word or regular expression. By default, case ignored"
+    exit
+fi
+ 
+bunzip2 --stdout "$db" | awk '
+BEGIN {
+    isDiscNamePrinted = 0
+}
+
+/^===/ {
+    discName = substr($0,4)
+    isDiscNamePrinted = 0
+#    print "discname == ", discName
+}
+
+match(tolower($0),"'$request'") {
+    if ( isDiscNamePrinted == 1 ) {
+        print "\t", $0
+    } else {
+        print "\nDisc \""discName"\""
+        isDiscNamePrinted = 1
+        print "\t", $0
+    }
+}
+'

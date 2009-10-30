@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# addcd script
+#
+# Adds new storage device to the database
+#
+# Note about cdrom mounting: you need line like that
+# /dev/hda    /media/cdrom0    udf,iso9660    user,noauto    0    0
+# placed somewhere in your /etc/fstab. Pay special attention to first, second
+# and fourth columns - value of first one will be stored in cddev variable,
+# of second - in mountpoint. As for fourth, don't forget to add those two
+# options - "user" allows user to mount cdrom without root privs, and noauto
+# says to system not to mount it on startup
+
+# database location; change to your own
+db="$HOME/.trashman.db"
+# path to temporary copy of database; default is the best one
+tmpdb="/tmp/tmpdb$$"
+# where your CDROM mounts (read note above)
+mountpoint="/media/cdrom0/"
+# how does your cdrom device called (read note above)
+cddev="/dev/hda"
+
+# cutn is number of columns to cut in the find' output
+# originally it will look like it:
+# /media/cdrom0/dir1/dir2/filename
+# ("/media/cdrom0" is my $mountpoint, your can be other)
+# after cutting, path will look like this:
+# /dir1/dir2/filename
+cutn=`echo $mountpoint | sed 's/\/$//' | grep -o '/' | wc -l`
+let cutn=cutn+2
+# read already used names from database - it will be used for check in existing
+# names
+names="`cat "$db" | grep '===' | sed 's/===//'`"
+
+# copy database to temp copy
+bunzip2 -c "$db" >> "$tmpdb"
+
+echo -n "Please put disc into drive and press Enter..."
+read
+echo -n "Mounting... "
+mount "$cddev" &> /dev/null
+if [ $? -eq 0 ]
+    then
+        echo "done!"
+    else
+        echo "failed!"
+        exit
+fi
+
+echo -n "Please enter the name of disc: "
+read name
+while [ `echo "$names" | grep "^${name}\$" | wc -l` -gt 0 ]
+do
+    echo -n "Name is already in use, enter another: "
+    read name
+done
+
+echo "===${name}" >> "$tmpdb"
+
+echo -n "Adding to database... "
+find "$mountpoint" -type f -print | cut -f ${cutn}- -d '/' | sed 's/^/\//' >> "$tmpdb"
+if [ $? -eq 0 ]
+    then
+        echo "done!"
+    else
+        echo "failed!"
+        exit
+fi
+
+echo -n "Unmounting... "
+umount "$cddev" &> /dev/null
+if [ $? -eq 0 ]
+    then
+        echo "done!"
+    else
+        echo "failed!"
+        exit
+fi
+
+# copy database back and remove temp copy
+bzip2 --stdout --best "$tmpdb" > "$db"
+rm "$tmpdb"
+

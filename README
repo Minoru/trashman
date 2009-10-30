@@ -1,0 +1,5 @@
+trashman is a set of BASH scripts for managing your CD/DVD/etc. collection
+
+Requires only bash and gawk.
+
+Read sources for details about scripts.

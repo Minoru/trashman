@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# listcd - lists names of already added storade devices
+
+# database location
+db="$HOME/.trashman.db"
+
+bunzip2 --stdout "$db" | grep '===' | sed 's/===//'
