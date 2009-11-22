@@ -18,6 +18,14 @@
 # 1 database (un)packing failed
 # 2 disc (un)mounting failed
 # 3 disc scanning failed
+# 4 drive ejecting failed
+#
+
+#
+# Command line options
+#
+# -e
+#    eject drive after unmounting
 #
 
 # database location; change to your own
@@ -28,6 +36,19 @@ tmpdb="/tmp/tmpdb$$"
 mountpoint="/media/cdrom0/"
 # how does your cdrom device called (read note above)
 cddev="/dev/hda"
+# eject drive after unmounting?
+eject=false
+
+# processing parameters given to script
+while getopts ":e" option
+do
+    case $option in
+        e)
+            eject=true
+        ;;
+    esac
+done
+shift $(($OPTIND - 1))
 
 # cutn is number of columns to cut in the find' output
 # originally it will look like it:
@@ -44,10 +65,13 @@ names="`cat "$db" | grep '===' | sed 's/===//'`"
 # copy database to temp copy
 if [ -e "$db" ]
 then
+    echo -n "Database found, unpacking... "
     bunzip2 -c "$db" >> "$tmpdb"
-    if [ $? -eq 1 ]
+    if [ $? -eq 0 ]
     then
-        echo "Database can't be packed!"
+        echo "done!"
+    else
+        echo "failed!"
         exit 1
     fi
 else
@@ -60,11 +84,11 @@ read
 echo -n "Mounting... "
 mount "$cddev" &> /dev/null
 if [ $? -eq 0 ]
-    then
-        echo "done!"
-    else
-        echo "failed!"
-        exit 2
+then
+    echo "done!"
+else
+    echo "failed!"
+    exit 2
 fi
 
 echo -n "Please enter the name of disc: "
@@ -80,21 +104,21 @@ echo "===${name}" >> "$tmpdb"
 echo -n "Adding to database... "
 find "$mountpoint" -type f -print | cut -f ${cutn}- -d '/' | sed 's/^/\//' >> "$tmpdb"
 if [ $? -eq 0 ]
-    then
-        echo "done!"
-    else
-        echo "failed!"
-        exit 3
+then
+    echo "done!"
+else
+    echo "failed!"
+    exit 3
 fi
 
 echo -n "Unmounting... "
 umount "$cddev" &> /dev/null
 if [ $? -eq 0 ]
-    then
-        echo "done!"
-    else
-        echo "failed!"
-        exit 2
+then
+    echo "done!"
+else
+    echo "failed!"
+    exit 2
 fi
 
 # copy database back and remove temp copy
@@ -105,4 +129,18 @@ then
     exit 1
 fi
 rm "$tmpdb"
+
+echo 
+if [ $eject ]
+then
+    echo -n "Ejecting drive... "
+    eject "$cddev"
+    if [ $? -eq 0 ]
+    then
+        echo "done!"
+    else
+        echo "failed!"
+        exit 4
+    fi
+fi
 
