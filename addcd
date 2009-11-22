@@ -12,6 +12,14 @@
 # options - "user" allows user to mount cdrom without root privs, and noauto
 # says to system not to mount it on startup
 
+#
+# Exit codes
+#
+# 1 database (un)packing failed
+# 2 disc (un)mounting failed
+# 3 disc scanning failed
+#
+
 # database location; change to your own
 db="$HOME/.trashman.db"
 # path to temporary copy of database; default is the best one
@@ -34,7 +42,18 @@ let cutn=cutn+2
 names="`cat "$db" | grep '===' | sed 's/===//'`"
 
 # copy database to temp copy
-bunzip2 -c "$db" >> "$tmpdb"
+if [ -e "$db" ]
+then
+    bunzip2 -c "$db" >> "$tmpdb"
+    if [ $? -eq 1 ]
+    then
+        echo "Database can't be packed!"
+        exit 1
+    fi
+else
+    echo "Database not found - initialized empty."
+    touch "$tmpdb"
+fi
 
 echo -n "Please put disc into drive and press Enter..."
 read
@@ -45,7 +64,7 @@ if [ $? -eq 0 ]
         echo "done!"
     else
         echo "failed!"
-        exit
+        exit 2
 fi
 
 echo -n "Please enter the name of disc: "
@@ -65,7 +84,7 @@ if [ $? -eq 0 ]
         echo "done!"
     else
         echo "failed!"
-        exit
+        exit 3
 fi
 
 echo -n "Unmounting... "
@@ -75,10 +94,15 @@ if [ $? -eq 0 ]
         echo "done!"
     else
         echo "failed!"
-        exit
+        exit 2
 fi
 
 # copy database back and remove temp copy
 bzip2 --stdout --best "$tmpdb" > "$db"
+if [ $? -eq 1 ]
+then
+    echo "Database can't be packed!"
+    exit 1
+fi
 rm "$tmpdb"
 
