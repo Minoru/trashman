@@ -1,1 +1,13 @@
 +  help messages (-h comand line option)
++  write man pages
+   Things I *should* mention in addcd man page:
+   + to use -e option (eject drive) you should run program as root or be in the
+      group which allowed to write to your drive' device (say, /dev/dvd); this
+      group is "cdrom"
+
+   Things I *should* mention in findcd man page:
+   <none added yet>
+
+   Things I *should* mention in findcd man page:
+   <none added yet>
+
