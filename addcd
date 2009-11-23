@@ -85,6 +85,7 @@ else
     echo "Database not found - initialized empty."
     touch "$tmpdb"
 fi
+echo
 
 while true
 do
