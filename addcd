@@ -131,7 +131,7 @@ fi
 rm "$tmpdb"
 
 echo 
-if [ $eject ]
+if [ $eject == true ]
 then
     echo -n "Ejecting drive... "
     eject "$cddev"
