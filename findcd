@@ -24,16 +24,13 @@ BEGIN {
 /^===/ {
     discName = substr($0,4)
     isDiscNamePrinted = 0
-#    print "discname == ", discName
 }
 
 match(tolower($0),"'$request'") {
-    if ( isDiscNamePrinted == 1 ) {
-        print "\t", $0
-    } else {
+    if ( isDiscNamePrinted == 0 ) {
         print "\nDisc \""discName"\""
         isDiscNamePrinted = 1
-        print "\t", $0
     }
+    print "\t", $0    
 }
 '
