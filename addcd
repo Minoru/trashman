@@ -148,8 +148,8 @@ fi
 if [ $multiple == false ]
 then
     # quit the loop
-    break
     echo
+    break
 else
     echo -n "Add another disc? (y/n) [y] "
     ans="y"
