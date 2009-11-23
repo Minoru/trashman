@@ -26,6 +26,8 @@
 #
 # -e
 #    eject drive after unmounting
+# -m
+#    multiple discs scan
 #
 
 # database location; change to your own
@@ -38,14 +40,19 @@ mountpoint="/media/cdrom0/"
 cddev="/dev/hda"
 # eject drive after unmounting?
 eject=false
+# multiple discs adding?
+multiple=false
 
 # processing parameters given to script
-while getopts ":e" option
+while getopts ":em" option
 do
     case $option in
         e)
             eject=true
         ;;
+
+        m)
+            multiple=true
     esac
 done
 shift $(($OPTIND - 1))
@@ -78,6 +85,9 @@ else
     echo "Database not found - initialized empty."
     touch "$tmpdb"
 fi
+
+while true
+do
 
 echo -n "Please put disc into drive and press Enter..."
 read
@@ -121,16 +131,6 @@ else
     exit 2
 fi
 
-# copy database back and remove temp copy
-bzip2 --stdout --best "$tmpdb" > "$db"
-if [ $? -eq 1 ]
-then
-    echo "Database can't be packed!"
-    exit 1
-fi
-rm "$tmpdb"
-
-echo 
 if [ $eject == true ]
 then
     echo -n "Ejecting drive... "
@@ -143,4 +143,32 @@ then
         exit 4
     fi
 fi
+
+if [ $multiple == false ]
+then
+    # quit the loop
+    break
+else
+    echo -n "Add another disc? (y/n) [y] "
+    ans="y"
+    read -n 1 ans
+    echo
+    if [ "$ans" == "n" ]
+    then
+        break
+    fi
+    echo
+    echo
+fi
+
+done # while true loop
+
+# copy database back and remove temp copy
+bzip2 --stdout --best "$tmpdb" > "$db"
+if [ $? -eq 1 ]
+then
+    echo "Database can't be packed!"
+    exit 1
+fi
+rm "$tmpdb"
 
