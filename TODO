@@ -10,4 +10,5 @@
 
    Things I *should* mention in findcd man page:
    <none added yet>
-
++  "find in disc names too" option in findcd
++  listcd must sort its output before displaying it
