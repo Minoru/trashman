@@ -12,3 +12,4 @@
    <none added yet>
 +  "find in disc names too" option in findcd
 +  listcd must sort its output before displaying it
++  databse must be sorted by disc name
