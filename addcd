@@ -153,12 +153,11 @@ else
     ans="y"
     read -n 1 ans
     echo
+    echo
     if [ "$ans" == "n" ]
     then
         break
     fi
-    echo
-    echo
 fi
 
 done # while true loop
