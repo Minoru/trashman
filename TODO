@@ -1,3 +1,5 @@
++  add copyright notify to each script
+   +  create COPYING file with text of GPLv3
 +  help messages (-h comand line option)
 +  write man pages
    Things I *should* mention in addcd man page:
