@@ -15,3 +15,4 @@
 +  "find in disc names too" option in findcd
 +  listcd must sort its output before displaying it
 +  database must be sorted by disc name
++  switch to mktemp utility for temp files creating
