@@ -1,5 +1,7 @@
 trashman is a set of BASH scripts for managing your CD/DVD/etc. collection
 
+Distributed under GNU General Public License version 3. See COPYING.
+
 Requires only bash and gawk.
 
 Read sources for details about scripts.
