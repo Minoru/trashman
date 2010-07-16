@@ -45,7 +45,7 @@ BEGIN {
     next
 }
 
-match(tolower($0),"'$request'") {
+match(tolower($0), tolower("'$request'")) {
     if ( isDiscNamePrinted == 0 ) {
         print "\nDisc \""discName"\""
         isDiscNamePrinted = 1
